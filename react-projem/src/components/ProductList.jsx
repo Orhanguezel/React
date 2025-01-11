@@ -1,3 +1,4 @@
+import React from "react";
 import { Table } from "reactstrap";
 
 export default function ProductList(props) {
@@ -33,6 +34,3 @@ export default function ProductList(props) {
     </div>
   );
 }
-
-
-
