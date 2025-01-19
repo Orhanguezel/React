@@ -1,22 +1,34 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Navi from "./components/Navi";
 import CategoryList from "./components/CategoryList";
 import ProductList from "./components/ProductList";
-import { Container, Row, Col } from "reactstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+import CartList from "./components/CartList";
+import NotFound from "./components/NotFound";
+import "./styles/index.css";
+import alertify from "alertifyjs";
 
 export default function App() {
-  const [currentCategory, setCurrentCategory] = useState(""); // Selected category
-  const [products, setProducts] = useState([]); // List of products
+  const [currentCategory, setCurrentCategory] = useState(""); // Seçilen kategori
+  const [products, setProducts] = useState([]); // Ürün listesi
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-  // Fetch products from the API
+  const navigate = useNavigate(); // Yönlendirme için kullanılır
+
   useEffect(() => {
     getProducts();
-  }, []); // Run once when the component mounts
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart)); // Sepeti localStorage'a kaydet
+  }, [cart]);
 
   const changeCategory = (category) => {
-    setCurrentCategory(category.categoryName); // Update selected category
-    getProducts(category.id); // Fetch products for the selected category
+    setCurrentCategory(category.categoryName);
+    getProducts(category.id);
   };
 
   const getProducts = (categoryId) => {
@@ -27,40 +39,70 @@ export default function App() {
 
     fetch(url)
       .then((response) => response.json())
-      .then((data) => setProducts(data)); // Update products state
+      .then((data) => setProducts(data))
+      .catch((error) => console.error("API error:", error));
+  };
+
+  const addToCart = (product) => {
+    const newCart = [...cart];
+    const itemInCart = newCart.find((item) => item.product.id === product.id);
+    if (itemInCart) {
+      itemInCart.quantity++;
+    } else {
+      newCart.push({ product: product, quantity: 1 });
+    }
+    setCart(newCart);
+    alertify.success(`${product.productName} başarıyla sepete eklendi!`, 2);
+  };
+
+  const removeFromCart = (product) => {
+    const newCart = cart.filter((item) => item.product.id !== product.id);
+    setCart(newCart);
+    alertify.error(`${product.productName} sepetten silindi!`);
   };
 
   let categoryInfo = { title: "Category List" };
   let productInfo = { title: "Product List" };
 
   return (
-    <div>
-      <Container>
-        {/* Navigation */}
-        <Row>
-          <Col>
-            <Navi />
-          </Col>
-        </Row>
-
-        {/* Category and Product Lists */}
-        <Row>
-          <Col xs="3">
-            <CategoryList
-              currentCategory={currentCategory} // Props olarak seçilen kategori gönderildi
-              changeCategory={changeCategory} // Props olarak kategori değiştirme fonksiyonu gönderildi
-              info={categoryInfo} // Props olarak kategori bilgisi gönderildi
+    <div className="container mx-auto p-6">
+      <div className="mb-6">
+        <Navi
+          cart={cart}
+          removeFromCart={removeFromCart}
+          goToCart={() => navigate("/cart")}
+          goToHome={() => navigate("/")}
+        />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1">
+          <CategoryList
+            currentCategory={currentCategory}
+            changeCategory={changeCategory}
+            info={categoryInfo}
+          />
+        </div>
+        <div className="lg:col-span-3">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProductList
+                  products={products}
+                  currentCategory={currentCategory}
+                  info={productInfo}
+                  addToCart={addToCart}
+                />
+              }
             />
-          </Col>
-          <Col xs="9">
-            <ProductList
-              products={products} // Props olarak ürünler gönderildi
-              currentCategory={currentCategory} // Props olarak seçilen kategori gönderildi
-              info={productInfo} // Props olarak ürün bilgisi gönderildi
+            <Route
+              path="/cart"
+              element={<CartList cart={cart} removeFromCart={removeFromCart} />}
             />
-          </Col>
-        </Row>
-      </Container>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </div>
     </div>
   );
 }
