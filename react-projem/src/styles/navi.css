@@ -4,21 +4,31 @@
 
 /* Header Stili */
 .navi-header {
-  @apply bg-blue-300 text-white text-center py-4 flex justify-between align-middle;
+  @apply bg-blue-300 text-white py-4 flex justify-between items-center;
 }
 
 /* Başlık Stili */
 .navi-title {
-  @apply text-white flex justify-start mt-4 ml-4 text-4xl font-bold;
+  @apply text-white flex items-center text-4xl font-bold;
 }
 
-/* Liste Stili */
+/* Menü Linkleri Arası Boşluk */
 .navi-list {
-  @apply flex justify-end mt-4;
+  @apply flex space-x-8 items-center;
 }
 
-.nav-list-item {
-  @apply text-black font-bold py-2 px-4 rounded mx-2 hover:bg-gray-200 cursor-pointer relative;
+/* Alt Menü Stili */
+.navi-sublist {
+  @apply absolute hidden bg-white text-black text-left mt-2 py-1 rounded shadow-lg w-80 z-10;
+}
+
+.nav-list-item:hover .navi-sublist {
+  @apply block;
+}
+
+/* Toggle ve Cart Arası Boşluk */
+.toggle {
+  @apply ml-6;
 }
 
 /* Alt Menü Stili */
@@ -51,3 +61,6 @@
 .reset-button {
   @apply text-white bg-gray-500 hover:bg-gray-700 py-1 px-4 rounded-lg;
 }
+
+
+

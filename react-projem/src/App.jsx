@@ -8,6 +8,7 @@ import NotFound from "./components/NotFound";
 import "./styles/index.css";
 import alertify from "alertifyjs";
 
+
 export default function App() {
   const [currentCategory, setCurrentCategory] = useState(""); // Seçilen kategori
   const [products, setProducts] = useState([]); // Ürün listesi
@@ -15,6 +16,12 @@ export default function App() {
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
   });
+
+  const [mode, setMode] = useState("light");
+
+  const toggleMode = () => {
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
 
   const navigate = useNavigate(); // Yönlendirme için kullanılır
 
@@ -65,18 +72,21 @@ export default function App() {
   let productInfo = { title: "Product List" };
 
   return (
+    <div className={`${mode === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-900"} min-h-screen`}>
     <div className="container mx-auto p-6">
       <div className="mb-6">
         <Navi
+          mode={mode} 
+          toggleMode={toggleMode}
           cart={cart}
           removeFromCart={removeFromCart}
           goToCart={() => navigate("/cart")}
-          goToHome={() => navigate("/")}
         />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
           <CategoryList
+            mode={mode} toggleMode={toggleMode}
             currentCategory={currentCategory}
             changeCategory={changeCategory}
             info={categoryInfo}
@@ -88,6 +98,7 @@ export default function App() {
               path="/"
               element={
                 <ProductList
+                  mode={mode} toggleMode={toggleMode}
                   products={products}
                   currentCategory={currentCategory}
                   info={productInfo}
@@ -97,12 +108,17 @@ export default function App() {
             />
             <Route
               path="/cart"
-              element={<CartList cart={cart} removeFromCart={removeFromCart} />}
+              element={<CartList
+                mode={mode}
+                cart={cart} 
+                removeFromCart={removeFromCart} 
+                />}
             />
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<NotFound mode={mode} />} />
           </Routes>
         </div>
       </div>
+    </div>
     </div>
   );
 }
