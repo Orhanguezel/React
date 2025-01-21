@@ -2,10 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* Header Stili */
 .navi-header {
   @apply bg-blue-300 text-white py-4 flex justify-between items-center;
 }
+
+/* Hamburger Menü */
+.mobile-menu {
+  @apply flex flex-col space-y-2 bg-gray-100 rounded p-4 lg:hidden;
+}
+
 
 /* Başlık Stili */
 .navi-title {

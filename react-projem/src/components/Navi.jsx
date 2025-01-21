@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 import "../styles/navi.css";
 import CartSummery from "./CartSummery";
-import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
+import { SunIcon, MoonIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 Navi.propTypes = {
   cart: PropTypes.array.isRequired,
@@ -13,6 +14,8 @@ Navi.propTypes = {
 };
 
 export default function Navi({ cart, removeFromCart, goToCart, goToHome, mode, toggleMode }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <header
       className={`${
@@ -35,8 +38,23 @@ export default function Navi({ cart, removeFromCart, goToCart, goToHome, mode, t
           </a>
         </div>
 
-        {/* Menü Linkleri */}
-        <div className="flex items-center gap-x-12 mx-12">
+        {/* Hamburger Menü - Küçük Ekran */}
+        <div className="flex lg:hidden">
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 rounded-md text-gray-700 hover:text-gray-900"
+          >
+            {isMobileMenuOpen ? (
+              <XMarkIcon className="h-6 w-6" />
+            ) : (
+              <Bars3Icon className="h-6 w-6" />
+            )}
+          </button>
+        </div>
+
+        {/* Menü Linkleri - Büyük Ekran */}
+        <div className={`hidden lg:flex items-center gap-x-12 mx-12`}>
           <a
             href="/"
             onClick={goToHome}
@@ -59,7 +77,7 @@ export default function Navi({ cart, removeFromCart, goToCart, goToHome, mode, t
         </div>
 
         {/* Cart ve Gece-Gündüz Toggle */}
-        <div className="flex items-center gap-x-6">
+        <div className="hidden lg:flex items-center gap-x-6">
           {/* Gece-Gündüz Toggle */}
           <button
             onClick={toggleMode}
@@ -77,6 +95,31 @@ export default function Navi({ cart, removeFromCart, goToCart, goToHome, mode, t
           </button>
         </div>
       </nav>
+
+      {/* Mobil Menü - Küçük Ekran */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-gray-100 p-4">
+          <a
+            href="/"
+            onClick={goToHome}
+            className="block text-sm font-semibold hover:text-indigo-600 mb-2"
+          >
+            Home
+          </a>
+          <a
+            href="#"
+            className="block text-sm font-semibold hover:text-indigo-600 mb-2"
+          >
+            Component
+          </a>
+          <CartSummery
+            cart={cart}
+            removeFromCart={removeFromCart}
+            goToCart={goToCart}
+            mode={mode}
+          />
+        </div>
+      )}
     </header>
   );
 }
