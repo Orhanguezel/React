@@ -1,13 +1,13 @@
 import ReactDOM from "react-dom/client";
-import App from "./App"; // App bileşeni
-import "./styles/style.css";
-import "alertifyjs/build/css/alertify.css";
-import "alertifyjs/build/css/themes/default.css";
-import { BrowserRouter } from "react-router-dom"; // BrowserRouter burada tanımlı
+import App from "./App";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { CartProvider } from "./context/CartContext.jsx";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <ThemeProvider>
+      <CartProvider>
+        <App />
+      </CartProvider>
+    </ThemeProvider>
 );
+
